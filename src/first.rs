@@ -1,21 +1,31 @@
-use crate::util::{TaskPark, input_file};
+use crate::util::TaskPart;
 
-const FIRST_DAY: &str = "1st";
+pub const DAY: &str = "1st";
 
-pub fn a() {
-    let _input_file = input_file(FIRST_DAY, TaskPark::A);
-
-    // TODO: do task stuff
+pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("First_A!");
 
-    // TODO: store result
-}
-
-pub fn b() {
-    let _input_file = input_file(FIRST_DAY, TaskPark::B);
+    let input = load_input(DAY, TaskPart::A);
 
     // TODO: do task stuff
+
+    let task_result = |_i| {
+        "lol".to_string()
+    };
+
+    store_output(task_result(input), DAY, TaskPart::A).expect("funky task not built right... yet?");
+}
+
+pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("First_B!");
 
-    // TODO: store result
+    let input = load_input(DAY, TaskPart::B);
+
+    // TODO: do task stuff
+
+    let task_result = |_i| {
+        "lol".to_string()
+    };
+
+    store_output(task_result(input), DAY, TaskPart::B).expect("funky task not built right... yet?");
 }
