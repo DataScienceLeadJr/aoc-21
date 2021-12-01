@@ -6,7 +6,7 @@ pub enum TaskPart {
 }
 
 pub fn input_file(day: &str, which_one: TaskPart) -> String{
-    let path = Path::new("D:\\Projects\\Rust\\aoc-21\\src\\input");
+    let path = Path::new("D:\\Projects\\Rust\\aoc-21\\input");
     let file_path = match which_one {
         TaskPart::A => path.join(format!("{}_a.txt", day)), // TODO: check the AoC file names for these
         TaskPart::B => path.join(format!("{}_b.txt", day)),
@@ -16,7 +16,7 @@ pub fn input_file(day: &str, which_one: TaskPart) -> String{
 }
 
 pub fn store_output(task_result: String, day: &str, which_one: TaskPart) -> Result<(), std::io::Error>{
-    let out_path = Path::new("D:\\Projects\\Rust\\aoc-21\\src\\output");
+    let out_path = Path::new("D:\\Projects\\Rust\\aoc-21\\output");
 
     let out_file_path = out_path.join(format!("{}_{}.txt", day, match which_one {
         TaskPart::A => "a",
