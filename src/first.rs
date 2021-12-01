@@ -2,12 +2,14 @@ use crate::util::TaskPart;
 
 pub const DAY: &str = "1st";
 
+fn process_input_day_1(input: String) -> Vec<i32>{
+    input.split("\n").map(|num| num.parse::<i32>().unwrap()).collect::<Vec<i32>>()
+}
+
 pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("First_A!");
 
-    let input = load_input(DAY, TaskPart::A);
-
-    let depths = input.split("\n").map(|num| num.parse::<i32>().unwrap()).collect::<Vec<i32>>();
+    let depths = process_input_day_1(load_input(DAY, TaskPart::A));
 
     let mut num_increases = 0;
 
@@ -25,8 +27,7 @@ pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
 pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("First_B!");
 
-    let input = load_input(DAY, TaskPart::B);
-    let depths = input.split("\n").map(|num| num.parse::<i32>().unwrap()).collect::<Vec<i32>>();
+    let depths = process_input_day_1(load_input(DAY, TaskPart::B));
 
     let sliding_window = |array: &Vec<i32>, index: usize| {
         if index + 1 >= array.len() {
