@@ -3,7 +3,7 @@ use crate::util::TaskPart;
 pub const DAY: &str = "1st";
 
 fn process_input_day_1(input: String) -> Vec<i32>{
-    input.split("\n").map(|num| num.parse::<i32>().unwrap()).collect::<Vec<i32>>()
+    input.lines().map(|num| num.parse::<i32>().unwrap()).collect::<Vec<i32>>()
 }
 
 pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {

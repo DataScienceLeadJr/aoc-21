@@ -10,7 +10,7 @@ enum Direction{
 
 fn process_input_day_1(input: String) -> Vec<(Direction, i32)> {
     input
-    .split("\n")
+    .lines()
     .map(|command| {
         let parts = command.split(" ").collect::<Vec<&str>>();
         let direction = match parts[0] {
