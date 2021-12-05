@@ -8,7 +8,7 @@ enum Direction{
     Down,
 }
 
-fn process_input_day_1(input: String) -> Vec<(Direction, i32)> {
+fn process_input(input: String) -> Vec<(Direction, i32)> {
     input
     .lines()
     .map(|command| {
@@ -28,7 +28,7 @@ fn process_input_day_1(input: String) -> Vec<(Direction, i32)> {
 pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("Second_A!");
 
-    let commands = process_input_day_1(load_input(DAY, TaskPart::A));
+    let commands = process_input(load_input(DAY, TaskPart::A));
     let mut hor_pos = 0;
     let mut depth = 0;
     let _result: () = commands.iter().map(|(dir, amount)| {
@@ -47,7 +47,7 @@ pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
 pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("Second_B!");
 
-    let commands = process_input_day_1(load_input(DAY, TaskPart::B));
+    let commands = process_input(load_input(DAY, TaskPart::B));
 
     let mut hor_pos = 0;
     let mut depth = 0;

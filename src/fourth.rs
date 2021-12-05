@@ -1,5 +1,3 @@
-use std::{collections::{HashMap}, panic, ops::{Range, RangeTo, RangeFrom}};
-
 use itertools::Itertools;
 
 use crate::util::TaskPart;
@@ -9,7 +7,7 @@ pub const DAY: &str = "4th";
 type BingoBoards = Vec<[[(i32, bool); 5]; 5]>;
 
 
-fn process_input_day_1(input: String) -> (Vec<i32>, BingoBoards) {
+fn process_input(input: String) -> (Vec<i32>, BingoBoards) {
     let mut lines: Vec<_> = input.lines().collect();
     let draw_numbers = lines.first().unwrap().split(",").map(|num| num.parse::<i32>().unwrap()).collect::<Vec<i32>>();
     lines = lines[1..].to_vec();
@@ -32,13 +30,13 @@ fn process_input_day_1(input: String) -> (Vec<i32>, BingoBoards) {
 pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("Fourth_A!");
 
-    let (draw_numbers,mut boards) = process_input_day_1(load_input(DAY, TaskPart::A));
+    let (draw_numbers,mut boards) = process_input(load_input(DAY, TaskPart::A));
 
     let mut winner_board: usize = 1;
     let mut win_draw_num = -1;
 
     'outer: for n in draw_numbers {
-        for (i, board) in boards.iter_mut().enumerate() {
+        for (_, board) in boards.iter_mut().enumerate() {
             for x in 0..5 {
                 for y in 0..5 {
                     if board[x][y].0 == n {
@@ -91,13 +89,13 @@ pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
 pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("Fourth_B!");
 
-    let (draw_numbers,mut boards) = process_input_day_1(load_input(DAY, TaskPart::A));
+    let (draw_numbers,mut boards) = process_input(load_input(DAY, TaskPart::A));
 
     let mut loser_board = None;
     let mut win_draw_num = -1;
 
     'outer: for n in draw_numbers {
-        for (i, board) in boards.iter_mut().enumerate() {
+        for (_, board) in boards.iter_mut().enumerate() {
             for x in 0..5 {
                 for y in 0..5 {
                     if board[x][y].0 == n {

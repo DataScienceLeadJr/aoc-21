@@ -7,7 +7,7 @@ use crate::util::TaskPart;
 pub const DAY: &str = "3rd";
 
 
-fn process_input_day_1(input: String) -> Vec<String> {
+fn process_input(input: String) -> Vec<String> {
     input
     .lines()
     .map(|string| string.to_string())
@@ -17,7 +17,7 @@ fn process_input_day_1(input: String) -> Vec<String> {
 pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("Third_A!");
 
-    let diagnostic_report = process_input_day_1(load_input(DAY, TaskPart::A));
+    let diagnostic_report = process_input(load_input(DAY, TaskPart::A));
 
     let mut bit_counts: HashMap<usize, (usize, usize)> = HashMap::with_capacity(diagnostic_report[0].len());
 
@@ -189,7 +189,7 @@ fn get_most_and_least(values: Vec<String>, bit_level: usize) -> (String, String)
 pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("Third_B!");
 
-    let mut diagnostic_report = process_input_day_1(load_input(DAY, TaskPart::B));
+    let mut diagnostic_report = process_input(load_input(DAY, TaskPart::B));
 
     // sort for every bit in one go to make it easier.
     diagnostic_report.rev_bin_sort();
