@@ -24,6 +24,7 @@ fn main() {
         "4th" => (fourth::a(&input_file, &store_output), fourth::b(&input_file, &store_output)),
         "5th" => (fifth::a(&input_file, &store_output), fifth::b(&input_file, &store_output)),
         "6th" => (sixth::a(&input_file, &store_output), sixth::b(&input_file, &store_output)),
+        "7th" => (seventh::a(&input_file, &store_output), seventh::b(&input_file, &store_output)),
         _ => panic!("WAIHBEPWYUBEPUB!!! WHAT KINDA DAY IS THAT IN THE MONTH OF DECEMBER!?")
     };
 }
