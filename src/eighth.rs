@@ -41,12 +41,44 @@ pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
     store_output(digit_count.to_string(), DAY, TaskPart::A).expect("funky task not built right... yet?");
 }
 
+#[derive(Default, Debug, Clone)]
+struct Digit {
+    segments: [String; 7]
+}
+
+impl Digit {
+    fn new() -> Self {
+        let all_posibilities = "abcdefg".to_string();
+        let mut array: [String; 7] = Default::default();
+
+        array.iter_mut().for_each(|entry| {
+            *entry = all_posibilities.clone();
+        });
+        Digit {
+            segments: array,
+        }
+    }
+
+    fn init_all() -> [Self; 10] {
+        let mut arr: [Self; 10] = Default::default();
+        arr.iter_mut().for_each(|entry| {
+            *entry = Self::new();
+        });
+        arr
+    }
+}
+
+
 pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("Eigth_B!");
 
-    let patterns = process_input(load_input(DAY, TaskPart::B));
+    let _patterns = process_input(load_input(DAY, TaskPart::B));
 
-    let mut sum_of_all_outputs = 0;
+    let one_through_ten = Digit::init_all();
+
+    one_through_ten.iter().for_each(|digit| {println!("{:?}", digit)});
+
+    let sum_of_all_outputs = 0;
 
     println!("sum_of_all_outputs: {}", sum_of_all_outputs);
 
