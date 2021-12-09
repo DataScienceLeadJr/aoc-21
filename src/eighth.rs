@@ -47,36 +47,23 @@ pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
 }
 
 trait StringSet {
-    fn overlapping(&self, other: &str) -> String;
-    fn remove_overlapping(&self, other: &str) -> String;
+    fn union(&self, other: &str) -> String;
+    fn remove_union(&self, other: &str) -> String;
 }
 
 impl StringSet for str {
-    fn overlapping(&self, other: &str) -> String {
-        let mut overlap = "".to_string();
-
-        self.chars().for_each(|c| {
-            if other.contains(c) {
-                overlap.push(c);
-            }
-        });
-
-        overlap
+    fn union(&self, other: &str) -> String {
+        self.chars().filter(|c| {
+            other.contains(*c)
+        }).collect()
     }
 
-    fn remove_overlapping(&self, other: &str) -> String {
-        let overlapping = self.overlapping(other);
+    fn remove_union(&self, other: &str) -> String {
+        let union = self.union(other);
 
-        let mut with_overlapp_removed = String::default();
-
-        self.chars().for_each(|c| {
-            if !overlapping.contains(c) {
-                with_overlapp_removed.push(c);
-            }
-        });
-
-        with_overlapp_removed
-        
+        self.chars().filter(|c| {
+            !union.contains(*c)
+        }).collect()
     }
 }
 
@@ -105,6 +92,14 @@ const LEGAL_NUMBERS: [[bool; 7]; 10] = [
     NINE,
 ];
 
+const NUMBERS_WITH_SIX: [[bool; 7]; 3] = [
+    ZERO,
+    SIX,
+    NINE,
+];
+
+const ALL_POSSIBILITIES: &str = "abcdefg";
+
 #[derive(Default, Debug, Clone)]
 struct Digit {
     segments: [String; 7],
@@ -112,46 +107,38 @@ struct Digit {
 
 impl Digit {
     fn new() -> Self {
-        let all_posibilities = "abcdefg".to_string();
+        let all_posibilities = ALL_POSSIBILITIES;
         let mut array: [String; 7] = Default::default();
 
         array.iter_mut().for_each(|entry| {
-            *entry = all_posibilities.clone();
+            *entry = all_posibilities.to_string();
         });
         Digit {
             segments: array,
         }
     }
 
+    fn update_number_hypothesis(&mut self, reason: &str, num_pattern: [bool; 7]) {
+        num_pattern.iter().enumerate().for_each(|(i, seg)| {
+            if *seg {
+                self.segments[i] = reason.union(&self.segments[i]);
+            } else {
+                self.segments[i] = self.segments[i][..].remove_union(reason);
+            }
+        });
+    }
+
     fn restrict_belief_sets_on_given(&mut self, reason: &str) {
         match reason.len() {
             1 => panic!("THIS SHOULDN'T BE POSSIBLE! A one-light digit!?"),
             2 => {
-                self.segments[0] = self.segments[0][..].remove_overlapping(reason);
-                self.segments[1] = self.segments[1][..].remove_overlapping(reason);
-                self.segments[2] = reason.overlapping(&self.segments[2]);
-                self.segments[3] = self.segments[3][..].remove_overlapping(reason);
-                self.segments[4] = self.segments[4][..].remove_overlapping(reason);
-                self.segments[5] = reason.overlapping(&self.segments[5]);
-                self.segments[6] = self.segments[6][..].remove_overlapping(reason);
+                self.update_number_hypothesis(reason, ONE);
             }
             3 => {
-                self.segments[0] = reason.overlapping(&self.segments[0]);
-                self.segments[1] = self.segments[1][..].remove_overlapping(reason);
-                self.segments[2] = reason.overlapping(&self.segments[2]);
-                self.segments[3] = self.segments[3][..].remove_overlapping(reason);
-                self.segments[4] = self.segments[4][..].remove_overlapping(reason);
-                self.segments[5] = reason.overlapping(&self.segments[5]);
-                self.segments[6] = self.segments[6][..].remove_overlapping(reason);
+                self.update_number_hypothesis(reason, SEVEN);
             }
             4 => {
-                self.segments[0] = self.segments[0][..].remove_overlapping(reason);
-                self.segments[1] = reason.overlapping(&self.segments[1]);
-                self.segments[2] = reason.overlapping(&self.segments[2]);
-                self.segments[3] = reason.overlapping(&self.segments[3]);
-                self.segments[4] = self.segments[4][..].remove_overlapping(reason);
-                self.segments[5] = reason.overlapping(&self.segments[5]);
-                self.segments[6] = self.segments[6][..].remove_overlapping(reason);
+                self.update_number_hypothesis(reason, FOUR);
             }
             _ => {}
         };
@@ -162,13 +149,13 @@ impl Digit {
             input.iter().interleave(output.iter()).for_each(|code| {
                 match code.len() {
                     6 => {
-                        let missing_seg = "abcdefg".remove_overlapping(code);
+                        let missing_seg = ALL_POSSIBILITIES.remove_union(code);
                         // println!("fixing based on missing segment: {}", missing_seg);
                         for i in 0..7 {
                             if self.segments[i][..].contains(&missing_seg) {
                                 let mut possible_number = [true; 7];
                                 possible_number[i] = false;
-                                if LEGAL_NUMBERS.iter().any(|valid| *valid == possible_number) {
+                                if NUMBERS_WITH_SIX.iter().any(|valid| *valid == possible_number) {
                                     self.segments[i] = missing_seg.clone();
                                     // println!("WOPP!");
                                     // println!("  made segment {} into {}", i, missing_seg);
@@ -176,7 +163,7 @@ impl Digit {
                                         if i != j {
                                             if self.segments[j][..].contains(&missing_seg) {
                                                 // println!("    and made segment {}, {}", j, self.segments[j]);
-                                                self.segments[j] = self.segments[j][..].remove_overlapping(&missing_seg);
+                                                self.segments[j] = self.segments[j][..].remove_union(&missing_seg);
                                                 // println!("       into {}", self.segments[j]);
                                             }
                                         }
