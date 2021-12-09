@@ -1,4 +1,6 @@
-use itertools::Itertools;
+use std::slice::Iter;
+
+use itertools::{Itertools, Interleave};
 
 use crate::util::{
     TaskPart,
@@ -102,7 +104,7 @@ const ALL_POSSIBILITIES: &str = "abcdefg";
 
 #[derive(Default, Debug, Clone)]
 struct Digit {
-    segments: [String; 7],
+    beliefs: [String; 7],
 }
 
 impl Digit {
@@ -114,16 +116,16 @@ impl Digit {
             *entry = all_posibilities.to_string();
         });
         Digit {
-            segments: array,
+            beliefs: array,
         }
     }
 
     fn update_number_hypothesis(&mut self, reason: &str, num_pattern: [bool; 7]) {
         num_pattern.iter().enumerate().for_each(|(i, seg)| {
             if *seg {
-                self.segments[i] = reason.union(&self.segments[i]);
+                self.beliefs[i] = reason.union(&self.beliefs[i]);
             } else {
-                self.segments[i] = self.segments[i][..].remove_union(reason);
+                self.beliefs[i] = self.beliefs[i][..].remove_union(reason);
             }
         });
     }
@@ -144,60 +146,38 @@ impl Digit {
         };
     }
 
-    fn test_remaining_hypothesis(&mut self, input: &Vec<String>, output: &Vec<String>) {
-        while self.segments.iter().any(|seg| seg.len() > 1) {
-            input.iter().interleave(output.iter()).for_each(|code| {
-                match code.len() {
-                    6 => {
-                        let missing_seg = ALL_POSSIBILITIES.remove_union(code);
-                        // println!("fixing based on missing segment: {}", missing_seg);
-                        for i in 0..7 {
-                            if self.segments[i][..].contains(&missing_seg) {
-                                let mut possible_number = [true; 7];
-                                possible_number[i] = false;
-                                if NUMBERS_WITH_SIX.iter().any(|valid| *valid == possible_number) {
-                                    self.segments[i] = missing_seg.clone();
-                                    // println!("WOPP!");
-                                    // println!("  made segment {} into {}", i, missing_seg);
-                                    for j in 0..7 {
-                                        if i != j {
-                                            if self.segments[j][..].contains(&missing_seg) {
-                                                // println!("    and made segment {}, {}", j, self.segments[j]);
-                                                self.segments[j] = self.segments[j][..].remove_union(&missing_seg);
-                                                // println!("       into {}", self.segments[j]);
-                                            }
-                                        }
+    fn finalize_hypotheses_constraining(&mut self, words: Interleave<Iter<String>, Iter<String>>) {
+        words.for_each(|code| {
+            match code.len() {
+                6 => {
+                    let missing_seg = ALL_POSSIBILITIES.remove_union(code);
+                    for i in 0..7 {
+                        if self.beliefs[i][..].contains(&missing_seg) {
+                            let mut possible_number = [true; 7];
+                            possible_number[i] = false;
+                            if NUMBERS_WITH_SIX.iter().any(|valid| *valid == possible_number) {
+                                self.beliefs[i] = missing_seg.clone();
+                                for j in (0..7).filter(|j| i != *j) {
+                                    if self.beliefs[j][..].contains(&missing_seg) {
+                                        self.beliefs[j] = self.beliefs[j][..].remove_union(&missing_seg);
                                     }
                                 }
                             }
-
                         }
-                        // println!("{:?}", self.segments);
                     }
-                    _ => {}
                 }
-            });
-        }
+                _ => {}
+            }
+        });
     }
 
     fn to_digit(&self, code: &str) -> i32 {
-        let mut possible_number = [false; 7];
-        for i in 0..7 {
-            if code.contains(&self.segments[i][..]) {
-                possible_number[i] = true;
-            }
-        }
-
-        for i in 0..10 {
-            if LEGAL_NUMBERS[i] == possible_number {
-                return i as i32;
-            }
-        }
+        let digit = (0..7).map(|i| code.contains(&self.beliefs[i][..])).collect::<Vec<bool>>();
         
-        panic!("After all that deduction ended up with No Legal Number: {:?}", possible_number);
+        LEGAL_NUMBERS.iter().position(|num| *num.to_vec() == digit).unwrap() as i32
     }
 
-    fn to_number(&self, codes: &Vec<String>) -> i32 {
+    fn to_four_digit_number(&self, codes: &Vec<String>) -> i32 {
         self.to_digit(&codes[0]) * 1000 + self.to_digit(&codes[1]) * 100 + self.to_digit(&codes[2]) * 10 + self.to_digit(&codes[3])
     }
 }
@@ -211,23 +191,25 @@ pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
     let mut sum_of_all_outputs = 0;
 
     patterns.iter().for_each(|(input, output)| {
-        let mut digit_layout= Digit::new();
-        input.iter().for_each(|input_digit| {
-            digit_layout.restrict_belief_sets_on_given(input_digit);
-        });
-        output.iter().for_each(|output_digit| {
-            digit_layout.restrict_belief_sets_on_given(output_digit);
-        });
-        if !digit_layout.segments.iter().all(|s| s.len() == 1){
-            digit_layout.test_remaining_hypothesis(input, output);
-        }
+        let mut segment_hypotheses= Digit::new();
+        let word_iter = input.iter().interleave(output.iter());
 
-        let line_output = digit_layout.to_number(output);
+        word_iter.clone().for_each(|word| {
+            segment_hypotheses.restrict_belief_sets_on_given(word);
+        });
+
+        segment_hypotheses.finalize_hypotheses_constraining(word_iter);
+
+        assert!(
+            segment_hypotheses.beliefs.iter().all(|hypothesis| hypothesis.len() == 1),
+            "Didn't manage to constrain all hypothesis down to one thruth!"
+        );
+        
+        let line_output = segment_hypotheses.to_four_digit_number(output);
         println!("LINE OUTPUT: {}", line_output);
         
         sum_of_all_outputs += line_output;
     });
-
 
     println!("sum_of_all_outputs: {}", sum_of_all_outputs);
 
