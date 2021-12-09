@@ -1,16 +1,17 @@
-use std::iter::Product;
-
-use itertools::Itertools;
-
 use crate::util::TaskPart;
 
 pub const DAY: &str = "9th";
 
-
 fn process_input(input: String) -> Vec<Vec<i32>> {
     let lines = input.lines();
 
-    lines.map(|line| line.chars().into_iter().map(|c| c.to_string().parse().unwrap()).collect::<Vec<i32>>()).collect()
+    lines
+        .map(|line|
+                line.chars().into_iter()
+                    .map(|c|
+                        c.to_string().parse().unwrap())
+                    .collect::<Vec<i32>>())
+        .collect()
 }
 
 struct Heightmap {
@@ -42,11 +43,11 @@ impl Heightmap {
 
     fn run_filter(&self) -> Vec<((usize, usize), i32)> {
         let mut filter_result = Vec::new();
+
         for i in 1..self.map.len() - 1 {
-            for j in 1..self.map[i].len() - 1 {
-                if self.is_lowpoint(i, j) {
-                    filter_result.push(((i, j), self.map[i][j]));
-                }
+            for j in (1..self.map[i].len() - 1)
+                            .filter(|j| self.is_lowpoint(i, *j)) {
+                filter_result.push(((i, j), self.map[i][j]));
             }
         }
 
@@ -70,20 +71,15 @@ impl Heightmap {
         let mut basin = vec![self.map[lowpoint.0][lowpoint.1]];
         let mut already_searched = vec![lowpoint];
         let mut frontline: Vec<(usize, usize)> = Vec::new();
-        self.expand_frontline(&mut frontline, lowpoint.0, lowpoint.1, &already_searched);
 
-        // println!("started expanding basin! \n\tstarting loc-val: {:?}_{}\n\tfrontline len: {}", lowpoint, basin.first().unwrap(), frontline.len());
+        self.expand_frontline(&mut frontline, lowpoint.0, lowpoint.1, &already_searched);
 
         while !frontline.is_empty() {
             let loc = frontline.remove(0);
-            // println!("\tsearching and pushing: {:?}, {}", loc, self.map[loc.0][loc.1]);
             basin.push(self.map[loc.0][loc.1]);
             already_searched.push(loc);
-            // let fl_len = frontline.len();
             self.expand_frontline(&mut frontline, loc.0, loc.1, &already_searched);
-            // println!("expanded frontline by: {}", frontline.len() - fl_len);
         }
-        // println!("done with basin! len: {}", basin.len());
         basin
     }
 
@@ -133,7 +129,6 @@ pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
     height_map.pad(9);
     let low_points = height_map.run_filter();
 
-
     let mut basin_sizes = height_map.grow_into_basins(
         low_points.into_iter().map(|(loc, _)| loc).collect()
     );
@@ -141,7 +136,6 @@ pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
     println!("Basin sizes: {:?}", basin_sizes);
 
     let the_answer: i32 = basin_sizes[basin_sizes.len() - 3..].to_owned().into_iter().product();
-
 
     println!("the answer is {}", the_answer);
 
