@@ -1,5 +1,3 @@
-use std::ops::Index;
-
 use itertools::Itertools;
 
 use crate::util::{
@@ -8,14 +6,19 @@ use crate::util::{
 
 pub const DAY: &str = "8th";
 
-
 fn process_input(input: String) -> Vec<(Vec<String>, Vec<String>)> {
-    let lines = input.lines();
-
-
-    lines.into_iter().map(|line| line.split(" | ").into_iter().map(|io| io.split_whitespace().into_iter().map(|digit| digit.to_string()).collect::<Vec<String>>()).collect_tuple().unwrap()).collect()
+    input.lines().into_iter()
+        .map(
+            |line| 
+                line.split(" | ").into_iter()
+                .map(
+                    |io| 
+                        io.split_whitespace().into_iter()
+                        .map(|digit| digit.to_string())
+                        .collect::<Vec<String>>())
+                .collect_tuple().unwrap())
+        .collect()
 }
-
 
 pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("Eigth_A!");
