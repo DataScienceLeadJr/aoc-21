@@ -1,19 +1,32 @@
+use itertools::Itertools;
+
 use crate::util::{
     TaskPart,
 };
 
 pub const DAY: &str = "10th";
 
-fn process_input(input: String) -> Vec<i32> {
-    let line = input.lines().next().unwrap();
 
-    line.split(",").map(|pos| pos.parse::<i32>().unwrap()).collect()
+trait Syntax {
+    fn as_illegal_syntax_value(self) -> Result<i32, String>;
+}
+
+impl Syntax for char {
+    fn as_illegal_syntax_value(self) -> Result<i32, String> {
+        match self {
+            ')' => Ok(3),
+            ']' => Ok(57),
+            '}' => Ok(1197),
+            '>' => Ok(25137),
+            _ => Err("character without any syntax value given!".to_string())
+        }
+    }
 }
 
 pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("Tenth_A!");
 
-    let _ = process_input(load_input(DAY, TaskPart::A));
+    let lines = load_input(DAY, TaskPart::A).lines();
 
 
 
@@ -25,7 +38,7 @@ pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
 pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("Tenth_B!");
 
-    let _ = process_input(load_input(DAY, TaskPart::B));
+    let lines = load_input(DAY, TaskPart::B).lines();
 
     println!("minimum fuel usage: {}", 1);
 
