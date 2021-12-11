@@ -1,13 +1,21 @@
 use crate::util::TaskPart;
 
-pub const DAY: &str = "4th";
+pub const DAY: &str = "11th";
 
-fn process_input(input: String) {
-    let mut lines: Vec<_> = input.lines().collect();
+fn process_input(input: String) -> Vec<Vec<i32>>{
+    input.lines()
+        .map(
+            |line| 
+                line.chars()
+                    .map(
+                        |c| 
+                            c.to_string().parse().unwrap())
+                    .collect())
+        .collect()
 }
 
 pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
-    println!("Fourth_A!");
+    println!("Eleventh_A!");
 
     let _ = process_input(load_input(DAY, TaskPart::A));
 
@@ -17,7 +25,7 @@ pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
 }
 
 pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
-    println!("Fourth_B!");
+    println!("Eleventh_B!");
 
     let _ = process_input(load_input(DAY, TaskPart::B));
 
