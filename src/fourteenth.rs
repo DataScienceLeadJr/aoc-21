@@ -58,7 +58,7 @@ pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
     let mut counts = HashMap::new();
     starting_template.iter().for_each(|(c1, c2)| {counts.insert(c1.clone(), 0); counts.insert(c2.clone(), 0);});
     
-    let mut growth_result = grow_polymer(starting_template, insertion_rules, 0, 25);
+    let mut growth_result = grow_polymer(starting_template, insertion_rules, 0, 10);
     println!("growth_result: {:?}", growth_result.len() + 1);
 
     *counts.entry(growth_result.remove(0).0.clone()).or_insert(1) += 1;
@@ -68,22 +68,80 @@ pub fn a(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(St
         *counts.entry(*c1).or_insert(0) += 1;
     });
 
-    println!("{:?}", counts);
+    println!("counts after 10 steps:");
+    counts.iter().for_each(|(key, value)| {
+        println!("{:?} -> {}", key, value);
+    });
 
     let most = counts.values().max().unwrap();
     let least = counts.values().min().unwrap();
 
     println!("most: {} subtract least: {} => {}", most, least, most - least);
 
-    store_output("1".to_string(), DAY, TaskPart::A).expect("funky task not built right... yet?");
+    store_output((most - least).to_string(), DAY, TaskPart::A).expect("funky task not built right... yet?");
+}
+
+fn insert_into(pair: &(char,char), counts: &mut HashMap<char, u64>, with_prior_amount: u64, into_insertion_rules: &mut HashMap<(char, char), (char, u64)>) {
+    let (insert_char, _insert_amount) = into_insertion_rules.get(pair).unwrap().clone();
+    *counts.get_mut(&insert_char).unwrap() += with_prior_amount;
+    into_insertion_rules.get_mut(pair).unwrap().1 -= with_prior_amount;
+
+    let c = insert_char.clone();
+    into_insertion_rules.get_mut(&(pair.0, c)).unwrap().1 += with_prior_amount;
+    into_insertion_rules.get_mut(&(c, pair.1)).unwrap().1 += with_prior_amount;
 }
 
 pub fn b(load_input: &dyn Fn(&str, TaskPart) -> String, store_output: &dyn Fn(String, &str, TaskPart) -> Result<(), std::io::Error>) {
     println!("Fourteenth_B!");
 
-    let _graph = process_input(load_input(DAY, TaskPart::B));
+    let (starting_template, insertion_rules) = process_input(load_input(DAY, TaskPart::B));
 
-    println!("num increases: {}", 1);
+    let mut counts = HashMap::new();
+    insertion_rules.iter().for_each(|(key, value)| {counts.insert(key.0.clone(), 0); counts.insert(key.1.clone(), 0); counts.insert(value.clone(), 0);});
+    *counts.get_mut(&starting_template.last().unwrap().1).unwrap() += 1;
 
-    store_output("1".to_string(), DAY, TaskPart::B).expect("funky task not built right... yet?");
+    let mut insert_counts: HashMap<(char, char), (char, u64)> =
+            insertion_rules.iter()
+                .map(|(key, value)| {
+                    (*key, (*value, 0))
+                })
+                .collect();
+
+    starting_template.iter().for_each(|(key)| {
+        insert_counts.get_mut(key).unwrap().1 += 1;
+    });
+
+    // println!("starting insert amounts:");
+    insert_counts.iter().for_each(|(key, value)| {
+        if value.1 > 0 {
+            println!("{:?},{:?}", key, value);
+        }
+    });
+
+    for step in 0..40 {
+        // println!("at step {}..", step + 1 as usize);
+        let mut next_insertion_rules = insert_counts.clone();
+        insert_counts.iter().for_each(|(key, value)| {
+            if value.1 > 0 {
+                insert_into(&key, &mut counts, value.1, &mut next_insertion_rules);
+            }
+        });
+        insert_counts = next_insertion_rules.clone();
+    }
+
+    println!("counts after 40 steps:");
+    counts.iter().for_each(|(key, value)| {
+        println!("{:?} -> {}", key, value);
+    });
+    
+
+
+
+
+    let most = counts.values().max().unwrap();
+    let least = counts.values().min().unwrap();
+
+    println!("most: {} subtract least: {} => {}", most, least, most - least);
+
+    store_output((most - least).to_string(), DAY, TaskPart::B).expect("funky task not built right... yet?");
 }
