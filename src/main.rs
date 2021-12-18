@@ -16,6 +16,15 @@ mod thirteenth;
 mod fourteenth;
 mod fifteenth;
 mod sixteenth;
+mod seventeeth;
+mod eighteenth;
+mod nineteenth;
+mod twentieth;
+mod twentyfirst;
+mod twentysecond;
+mod twentythird;
+mod twentyfourth;
+mod twentyfifth;
 
 use util::{
     input_file,
@@ -40,6 +49,15 @@ fn main() {
         "14th" => (fourteenth::a(&input_file, &store_output), fourteenth::b(&input_file, &store_output)),
         "15th" => (fifteenth::a(&input_file, &store_output), fifteenth::b(&input_file, &store_output)),
         "16th" => (sixteenth::a(&input_file, &store_output), sixteenth::b(&input_file, &store_output)),
+        "17th" => (seventeenth::a(&input_file, &store_output), seventeenth::b(&input_file, &store_output)),
+        "18th" => (eighteenth::a(&input_file, &store_output), eighteenth::b(&input_file, &store_output)),
+        "19th" => (nineteenth::a(&input_file, &store_output), nineteenth::b(&input_file, &store_output)),
+        "20th" => (twentieth::a(&input_file, &store_output), twentieth::b(&input_file, &store_output)),
+        "21th" => (twentyfirst::a(&input_file, &store_output), twentyfirst::b(&input_file, &store_output)),
+        "22th" => (twentysecond::a(&input_file, &store_output), twentysecond::b(&input_file, &store_output)),
+        "23th" => (twentythird::a(&input_file, &store_output), twentythird::b(&input_file, &store_output)),
+        "24th" => (twentyfourth::a(&input_file, &store_output), twentyfourth::b(&input_file, &store_output)),
+        "25th" => (twentyfifth::a(&input_file, &store_output), twentyfifth::b(&input_file, &store_output)),
         _ => panic!("WAIHBEPWYUBEPUB!!! WHAT KINDA DAY IS THAT IN THE MONTH OF DECEMBER!?")
     };
 }
