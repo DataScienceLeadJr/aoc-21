@@ -14,6 +14,7 @@ mod eleventh;
 mod twelfth;
 mod thirteenth;
 mod fourteenth;
+mod fifteenth;
 
 use util::{
     input_file,
@@ -36,6 +37,7 @@ fn main() {
         "12th" => (twelfth::a(&input_file, &store_output), twelfth::b(&input_file, &store_output)),
         "13th" => (thirteenth::a(&input_file, &store_output), thirteenth::b(&input_file, &store_output)),
         "14th" => (fourteenth::a(&input_file, &store_output), fourteenth::b(&input_file, &store_output)),
+        "15th" => (fifteenth::a(&input_file, &store_output), fifteenth::b(&input_file, &store_output)),
         _ => panic!("WAIHBEPWYUBEPUB!!! WHAT KINDA DAY IS THAT IN THE MONTH OF DECEMBER!?")
     };
 }
